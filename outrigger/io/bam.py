@@ -116,7 +116,12 @@ def _get_junction_reads(filename):
     # Multimapped reads
     multi = collections.Counter()
 
-    for read in samfile.fetch():
+    if samfile.has_index():
+        fetch_iterator = samfile.fetch(until_eof=False)
+    else:
+        fetch_iterator = samfile.fetch(until_eof=True)
+
+    for read in fetch_iterator:
         if "N" in read.cigarstring:
             if read.mapping_quality < 255:
                 counter = multi
